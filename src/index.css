@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", sans-serif;
+
+  --color-primary-navy: #0F172A;
+  --color-brand-teal: #0D9488;
+  --color-brand-turquoise: #2DD4BF;
+  --color-muted-bg: #F8FAFC;
+  
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+}
+
+@layer base {
+  body {
+    @apply font-sans bg-white text-slate-900 antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight text-primary-navy;
+  }
+}
+
+.glass-morphism {
+  @apply bg-white/70 backdrop-blur-md border border-white/20;
+}
+
+.premium-shadow {
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05), 0 20px 25px -5px rgb(0 0 0 / 0.03);
+}
+
+.gradient-teal {
+  background: linear-gradient(135deg, #0F172A 0%, #0D9488 100%);
+}
+
+.mesh-bg {
+  background-color: #ffffff;
+  background-image: radial-gradient(at 0% 0%, hsla(170, 75%, 90%, 1) 0, transparent 50%),
+    radial-gradient(at 50% 0%, hsla(180, 60%, 95%, 1) 0, transparent 50%),
+    radial-gradient(at 100% 0%, hsla(190, 50%, 92%, 1) 0, transparent 50%);
+}
