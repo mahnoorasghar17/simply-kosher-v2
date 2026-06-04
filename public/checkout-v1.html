@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simply Kosher Wireless — Checkout</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: { extend: {
+    fontFamily: { sans:['Inter','sans-serif'], display:['Outfit','sans-serif'] },
+    colors: { navy:'#0F172A', teal:'#0D9488', turquoise:'#2DD4BF', muted:'#F8FAFC' }
+  }}
+}
+</script>
+<style>
+  * { font-family: 'Inter', sans-serif; }
+  h1,h2,h3,h4 { font-family: 'Outfit', sans-serif; }
+  .step-in { animation: fadeSlide .3s ease both; }
+  @keyframes fadeSlide { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+  .sel { transition:all .15s ease; cursor:pointer; }
+  .sel:hover { border-color:#0D9488; background:#f0fdfa; }
+  .sel.active { border-color:#0D9488; background:#f0fdfa; box-shadow:0 0 0 3px rgba(13,148,136,.15); }
+  .pill { transition:all .15s ease; cursor:pointer; }
+  .pill:hover { border-color:#0D9488; color:#0D9488; }
+  .pill.active { background:#0D9488; color:#fff; border-color:#0D9488; }
+  input,select { transition:border-color .15s,box-shadow .15s; }
+  input:focus,select:focus { outline:none; border-color:#0D9488; box-shadow:0 0 0 3px rgba(13,148,136,.15); }
+  .pshadow { box-shadow:0 4px 6px -1px rgb(0 0 0/.05),0 2px 4px -2px rgb(0 0 0/.05),0 20px 25px -5px rgb(0 0 0/.03); }
+  .pm.active { border-color:#0D9488; background:#f0fdfa; }
+</style>
+</head>
+<body class="bg-muted font-sans min-h-screen text-navy">
+
+<!-- HEADER -->
+<header class="fixed inset-x-0 top-0 z-50 bg-white border-b border-slate-100 pshadow">
+  <div class="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+      <div class="w-7 h-7 rounded-md bg-navy flex items-center justify-center">
+        <span class="text-turquoise font-bold text-xs font-display">SK</span>
+      </div>
+      <span class="font-semibold text-navy text-sm font-display">Simply Kosher Wireless</span>
+    </div>
+    <div class="flex items-center gap-5">
+      <div class="hidden sm:flex items-center gap-1.5 text-xs text-slate-400">
+        <svg class="w-3.5 h-3.5 text-teal" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
+        Secure Checkout
+      </div>
+      <a href="/" class="text-xs text-teal font-medium hover:opacity-80">← Back</a>
+    </div>
+  </div>
+</header>
+
+<!-- STEPPER -->
+<div class="fixed inset-x-0 top-14 z-40 bg-white border-b border-slate-100">
+  <div class="max-w-6xl mx-auto px-6 py-3">
+    <div class="flex items-center justify-center">
+      <div id="s1" class="flex flex-col items-center gap-1"><div class="step-dot w-7 h-7 rounded-full bg-teal text-white flex items-center justify-center text-xs font-semibold">1</div><span class="text-xs text-teal font-medium hidden sm:block">Find Plan</span></div>
+      <div id="l1" class="h-0.5 w-10 sm:w-20 bg-slate-200 mx-1 mb-3 transition-all duration-300"></div>
+      <div id="s2" class="flex flex-col items-center gap-1"><div class="step-dot w-7 h-7 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center text-xs font-semibold">2</div><span class="text-xs text-slate-400 font-medium hidden sm:block">Choose Plan</span></div>
+      <div id="l2" class="h-0.5 w-10 sm:w-20 bg-slate-200 mx-1 mb-3 transition-all duration-300"></div>
+      <div id="s3" class="flex flex-col items-center gap-1"><div class="step-dot w-7 h-7 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center text-xs font-semibold">3</div><span class="text-xs text-slate-400 font-medium hidden sm:block">SIM &amp; Device</span></div>
+      <div id="l3" class="h-0.5 w-10 sm:w-20 bg-slate-200 mx-1 mb-3 transition-all duration-300"></div>
+      <div id="s4" class="flex flex-col items-center gap-1"><div class="step-dot w-7 h-7 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center text-xs font-semibold">4</div><span class="text-xs text-slate-400 font-medium hidden sm:block">Delivery</span></div>
+      <div id="l4" class="h-0.5 w-10 sm:w-20 bg-slate-200 mx-1 mb-3 transition-all duration-300"></div>
+      <div id="s5" class="flex flex-col items-center gap-1"><div class="step-dot w-7 h-7 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center text-xs font-semibold">5</div><span class="text-xs text-slate-400 font-medium hidden sm:block">Checkout</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- MINI SUMMARY BAR -->
+<div id="mini-bar" class="hidden fixed inset-x-0 z-30 bg-teal/5 border-b border-teal/10" style="top:104px">
+  <div class="max-w-6xl mx-auto px-6 py-2 flex items-center justify-between flex-wrap gap-2">
+    <div id="mini-tags" class="flex flex-wrap gap-1.5 text-xs"></div>
+    <button onclick="restart()" class="text-xs text-teal font-medium hover:underline">Start Over</button>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<main id="main-content" class="pt-40 pb-20 px-4">
+<div class="max-w-6xl mx-auto">
+
+<!-- STEP 1 -->
+<div id="step-1" class="step-in max-w-xl mx-auto">
+  <div class="text-center mb-8">
+    <h1 class="text-2xl font-bold text-navy mb-2">Find Your Perfect Plan</h1>
+    <p class="text-slate-500 text-sm">Answer 3 quick questions — we'll match you instantly.</p>
+  </div>
+
+  <div class="bg-white rounded-[2rem] pshadow p-6 mb-4">
+    <p class="text-sm font-semibold text-navy mb-4 flex items-center gap-2">
+      <span class="w-5 h-5 bg-teal/10 text-teal rounded-full flex items-center justify-center text-xs font-bold">1</span>
+      Where will you use the service?
+    </p>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div class="sel border-2 border-slate-100 rounded-xl p-4 text-center" onclick="pick('dest','israel',this)">
+        <div class="text-2xl mb-1.5">🇮🇱</div>
+        <div class="text-xs font-semibold text-navy">Israel</div>
+      </div>
+      <div class="sel border-2 border-slate-100 rounded-xl p-4 text-center" onclick="pick('dest','europe',this)">
+        <div class="text-2xl mb-1.5">🇪🇺</div>
+        <div class="text-xs font-semibold text-navy">Europe</div>
+      </div>
+      <div class="sel border-2 border-slate-100 rounded-xl p-4 text-center" onclick="pick('dest','usa',this)">
+        <div class="text-2xl mb-1.5">🇺🇸</div>
+        <div class="text-xs font-semibold text-navy">United States</div>
+      </div>
+      <div class="sel border-2 border-slate-100 rounded-xl p-4 text-center" onclick="pick('dest','worldwide',this)">
+        <div class="text-2xl mb-1.5">🌍</div>
+        <div class="text-xs font-semibold text-navy">Worldwide</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-[2rem] pshadow p-6 mb-4">
+    <p class="text-sm font-semibold text-navy mb-4 flex items-center gap-2">
+      <span class="w-5 h-5 bg-teal/10 text-teal rounded-full flex items-center justify-center text-xs font-bold">2</span>
+      How long do you need it?
+    </p>
+    <div class="flex flex-wrap gap-2">
+      <div class="pill border-2 border-slate-200 rounded-full px-4 py-2 text-sm font-medium text-slate-600" onclick="pick('dur','1–5 Days',this)">1–5 Days</div>
+      <div class="pill border-2 border-slate-200 rounded-full px-4 py-2 text-sm font-medium text-slate-600" onclick="pick('dur','Up to 15 Days',this)">Up to 15 Days</div>
+      <div class="pill border-2 border-slate-200 rounded-full px-4 py-2 text-sm font-medium text-slate-600" onclick="pick('dur','1–3 Months',this)">1–3 Months</div>
+      <div class="pill border-2 border-slate-200 rounded-full px-4 py-2 text-sm font-medium text-slate-600" onclick="pick('dur','6+ Months',this)">6+ Months</div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-[2rem] pshadow p-6 mb-6">
+    <p class="text-sm font-semibold text-navy mb-4 flex items-center gap-2">
+      <span class="w-5 h-5 bg-teal/10 text-teal rounded-full flex items-center justify-center text-xs font-bold">3</span>
+      What type of service?
+    </p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div class="sel border-2 border-slate-100 rounded-xl p-5" onclick="pick('svc','data',this)">
+        <div class="text-2xl mb-2">📡</div>
+        <div class="font-semibold text-navy text-sm mb-1">Data Only</div>
+        <div class="text-xs text-slate-400">Browsing, apps &amp; streaming</div>
+      </div>
+      <div class="sel border-2 border-slate-100 rounded-xl p-5" onclick="pick('svc','full',this)">
+        <div class="text-2xl mb-2">📱</div>
+        <div class="font-semibold text-navy text-sm mb-1">Talk, Text &amp; Data</div>
+        <div class="text-xs text-slate-400">Full service with calls &amp; texts</div>
+      </div>
+    </div>
+  </div>
+
+  <button id="btn1" onclick="go(2)" disabled class="w-full bg-teal text-white font-semibold rounded-xl py-3.5 text-sm hover:opacity-90 transition-all disabled:opacity-30 disabled:cursor-not-allowed">
+    View Matching Plans →
+  </button>
+</div>
+
+<!-- STEP 2 -->
+<div id="step-2" class="step-in hidden">
+  <div class="flex items-center justify-between mb-5">
+    <div>
+      <h2 class="text-xl font-bold text-navy">Choose Your Plan</h2>
+      <p class="text-sm text-slate-400 mt-0.5">Plans matched to your selections</p>
+    </div>
+    <button onclick="go(1)" class="text-sm text-slate-500 hover:text-navy">← Back</button>
+  </div>
+  <div id="il-notice" class="hidden mb-4 p-4 bg-amber-50 border border-amber-200 rounded-2xl flex gap-3 items-start">
+    <span class="text-amber-500 mt-0.5">⚠️</span>
+    <div>
+      <p class="text-sm font-semibold text-amber-800">Device Compatibility Notice</p>
+      <p class="text-xs text-amber-700 mt-0.5">Compatible only with supported Israeli devices. <button class="underline" onclick="document.getElementById('compat').classList.toggle('hidden')">Learn more</button></p>
+      <p id="compat" class="hidden text-xs text-amber-700 mt-2 bg-amber-100 p-3 rounded-xl">Supported: iPhone 13+ (IL model), Samsung Galaxy S21+ (IL model), and devices with Israeli frequency bands (Band 1, 3, 7, 20).</p>
+    </div>
+  </div>
+  <div id="plan-grid" class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-4"></div>
+</div>
+
+<!-- STEP 3 -->
+<div id="step-3" class="step-in hidden max-w-xl mx-auto">
+  <div class="flex items-center justify-between mb-5">
+    <div><h2 class="text-xl font-bold text-navy">SIM &amp; Device</h2><p class="text-sm text-slate-400">Set up your SIM, optionally add a device</p></div>
+    <button onclick="go(2)" class="text-sm text-slate-500 hover:text-navy">← Back</button>
+  </div>
+
+  <div class="bg-white rounded-[2rem] pshadow p-6 mb-4">
+    <p class="text-sm font-semibold text-navy mb-4">SIM Card</p>
+    <div class="grid grid-cols-2 gap-3 mb-4">
+      <div id="sim-a" class="sel border-2 border-slate-100 rounded-xl p-4" onclick="simPick('existing')">
+        <div class="font-semibold text-sm text-navy mb-1">Bring My SIM</div>
+        <div class="text-xs text-slate-400">Use existing SIM</div>
+        <div class="text-xs text-teal font-semibold mt-2">Free</div>
+      </div>
+      <div id="sim-b" class="sel border-2 border-slate-100 rounded-xl p-4" onclick="simPick('new')">
+        <div class="font-semibold text-sm text-navy mb-1">New SIM Card</div>
+        <div class="text-xs text-slate-400">We'll send or prepare one</div>
+        <div class="text-xs text-slate-500 font-semibold mt-2">$4.99</div>
+      </div>
+    </div>
+    <div id="sim-existing-f" class="hidden space-y-2.5">
+      <input type="tel" placeholder="Mobile Number" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+      <input type="text" placeholder="Current Carrier (optional)" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+    </div>
+    <div id="sim-new-f" class="hidden text-xs text-teal bg-teal/5 rounded-xl p-3">📦 Estimated delivery: 3–5 business days · Free store pickup available</div>
+  </div>
+
+  <div class="bg-white rounded-[2rem] pshadow p-6 mb-6">
+    <div class="flex items-center justify-between mb-4">
+      <p class="text-sm font-semibold text-navy">Device <span class="text-slate-400 font-normal">(Optional)</span></p>
+      <button onclick="go(4)" class="text-xs text-teal hover:underline">Skip device →</button>
+    </div>
+    <div class="grid grid-cols-2 gap-3 mb-4">
+      <div id="dev-a" class="sel border-2 border-slate-100 rounded-xl p-4" onclick="devPick('have')">
+        <div class="font-semibold text-sm text-navy mb-1">I Have a Device</div>
+        <div class="text-xs text-slate-400">Bring your phone</div>
+      </div>
+      <div id="dev-b" class="sel border-2 border-slate-100 rounded-xl p-4" onclick="devPick('buy')">
+        <div class="font-semibold text-sm text-navy mb-1">Buy a Device</div>
+        <div class="text-xs text-slate-400">Browse smartphones</div>
+      </div>
+    </div>
+    <div id="dev-check" class="hidden mb-3">
+      <input type="text" placeholder="Enter model to check compatibility..." class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+    </div>
+    <div id="dev-cards" class="hidden grid grid-cols-3 gap-3">
+      <div class="sel border-2 border-slate-100 rounded-2xl p-4 text-center" onclick="buyDev('iphone',this)">
+        <div class="text-3xl mb-2">📱</div>
+        <div class="text-xs font-semibold text-navy">iPhone 15</div>
+        <div class="text-xs text-slate-400 mb-1.5">128GB</div>
+        <div class="text-teal text-sm font-bold">$35/mo</div>
+        <div class="text-xs text-slate-400">$849 full</div>
+      </div>
+      <div class="sel border-2 border-slate-100 rounded-2xl p-4 text-center" onclick="buyDev('samsung',this)">
+        <div class="text-3xl mb-2">📱</div>
+        <div class="text-xs font-semibold text-navy">Galaxy S24</div>
+        <div class="text-xs text-slate-400 mb-1.5">256GB</div>
+        <div class="text-teal text-sm font-bold">$28/mo</div>
+        <div class="text-xs text-slate-400">$699 full</div>
+      </div>
+      <div class="sel border-2 border-slate-100 rounded-2xl p-4 text-center" onclick="buyDev('pixel',this)">
+        <div class="text-3xl mb-2">📱</div>
+        <div class="text-xs font-semibold text-navy">Pixel 8</div>
+        <div class="text-xs text-slate-400 mb-1.5">128GB</div>
+        <div class="text-teal text-sm font-bold">$22/mo</div>
+        <div class="text-xs text-slate-400">$549 full</div>
+      </div>
+    </div>
+  </div>
+
+  <button onclick="go(4)" class="w-full bg-teal text-white font-semibold rounded-xl py-3.5 text-sm hover:opacity-90 transition-all">Continue to Delivery →</button>
+</div>
+
+<!-- STEP 4 -->
+<div id="step-4" class="step-in hidden max-w-xl mx-auto">
+  <div class="flex items-center justify-between mb-5">
+    <div><h2 class="text-xl font-bold text-navy">Delivery &amp; Details</h2><p class="text-sm text-slate-400">Last details before checkout</p></div>
+    <button onclick="go(3)" class="text-sm text-slate-500 hover:text-navy">← Back</button>
+  </div>
+
+  <div class="bg-white rounded-[2rem] pshadow p-6 mb-4">
+    <p class="text-sm font-semibold text-navy mb-4">Delivery Method</p>
+    <div class="grid grid-cols-2 gap-3 mb-4">
+      <div id="del-a" class="sel border-2 border-slate-100 rounded-xl p-4" onclick="delPick('pickup')">
+        <div class="text-lg mb-1">🏪</div>
+        <div class="font-semibold text-sm text-navy mb-1">Store Pickup</div>
+        <div class="text-xs text-slate-400">Ready in 2 hours</div>
+        <div class="text-xs text-teal font-semibold mt-1">Free</div>
+      </div>
+      <div id="del-b" class="sel border-2 border-slate-100 rounded-xl p-4" onclick="delPick('home')">
+        <div class="text-lg mb-1">🚚</div>
+        <div class="font-semibold text-sm text-navy mb-1">Home Delivery</div>
+        <div class="text-xs text-slate-400">3–5 business days</div>
+        <div class="text-xs text-slate-500 font-semibold mt-1">$4.99</div>
+      </div>
+    </div>
+    <div id="pickup-f" class="hidden space-y-2.5">
+      <select class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm bg-white">
+        <option value="">Select store location…</option>
+        <option>Manhattan — 123 W 48th St</option>
+        <option>Brooklyn — 456 Ocean Ave</option>
+        <option>Boro Park — 4418 13th Ave</option>
+        <option>Queens — 789 Jamaica Ave</option>
+      </select>
+      <input type="date" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+    </div>
+    <div id="home-f" class="hidden space-y-2.5">
+      <input type="text" placeholder="Street Address" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+      <div class="grid grid-cols-2 gap-2.5">
+        <input type="text" placeholder="City" class="border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+        <input type="text" placeholder="ZIP Code" class="border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+      </div>
+      <div class="text-xs text-teal bg-teal/5 rounded-xl p-3">📦 Delivery: 3–5 business days · $4.99</div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-[2rem] pshadow p-6 mb-6">
+    <p class="text-sm font-semibold text-navy mb-4">Your Details</p>
+    <div class="space-y-2.5">
+      <input type="text" placeholder="Full Name *" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+      <input type="email" placeholder="Email Address *" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+      <input type="tel" placeholder="Phone Number *" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+      <label class="flex items-center gap-2 cursor-pointer pt-1">
+        <input type="checkbox" class="rounded border-slate-300 accent-teal">
+        <span class="text-sm text-slate-600">Create an account for easy plan management</span>
+      </label>
+    </div>
+    <p class="text-xs text-slate-400 mt-3">Guest checkout available · Your data is encrypted &amp; secure</p>
+  </div>
+
+  <button onclick="go(5)" class="w-full bg-teal text-white font-semibold rounded-xl py-3.5 text-sm hover:opacity-90 transition-all">Review &amp; Checkout →</button>
+</div>
+
+<!-- STEP 5 -->
+<div id="step-5" class="step-in hidden">
+  <div class="flex items-center justify-between mb-5">
+    <div><h2 class="text-xl font-bold text-navy">Review &amp; Checkout</h2><p class="text-sm text-slate-400">One final step</p></div>
+    <button onclick="go(4)" class="text-sm text-slate-500 hover:text-navy">← Back</button>
+  </div>
+
+  <div class="flex flex-col lg:flex-row gap-6">
+    <!-- Payment -->
+    <div class="flex-1 space-y-4">
+      <div class="bg-white rounded-[2rem] pshadow p-6">
+        <p class="text-sm font-semibold text-navy mb-4">Payment Method</p>
+        <div class="grid grid-cols-4 gap-2 mb-5">
+          <button id="pm1" class="pm active border-2 border-teal bg-teal/5 rounded-xl py-3 text-xs font-medium transition-all" onclick="payPick('card',this)">💳<br><span class="text-[10px]">Card</span></button>
+          <button id="pm2" class="pm border-2 border-slate-100 rounded-xl py-3 text-xs font-medium transition-all" onclick="payPick('apple',this)"> <br><span class="text-[10px]">Apple Pay</span></button>
+          <button id="pm3" class="pm border-2 border-slate-100 rounded-xl py-3 text-xs font-medium transition-all" onclick="payPick('google',this)">G<br><span class="text-[10px]">Google Pay</span></button>
+          <button id="pm4" class="pm border-2 border-slate-100 rounded-xl py-3 text-xs font-medium transition-all" onclick="payPick('paypal',this)">🅿️<br><span class="text-[10px]">PayPal</span></button>
+        </div>
+        <div id="card-fields" class="space-y-2.5">
+          <input type="text" placeholder="Card Number" maxlength="19" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+          <div class="grid grid-cols-2 gap-2.5">
+            <input type="text" placeholder="MM / YY" class="border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+            <input type="text" placeholder="CVV" maxlength="4" class="border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+          </div>
+          <input type="text" placeholder="Name on Card" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+        </div>
+        <div id="alt-pay" class="hidden text-sm text-slate-500 bg-slate-50 rounded-xl p-4 text-center">You'll complete payment securely on the next screen.</div>
+      </div>
+
+      <div class="bg-white rounded-[2rem] pshadow p-6">
+        <p class="text-sm font-semibold text-navy mb-3">Coupon Code</p>
+        <div class="flex gap-2">
+          <input id="coupon" type="text" placeholder="Enter code…" class="flex-1 border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+          <button onclick="applyCoupon()" class="bg-navy text-white text-sm font-medium rounded-xl px-4 py-2.5 hover:opacity-80 transition-all">Apply</button>
+        </div>
+        <p id="coupon-ok" class="hidden text-xs text-teal font-medium mt-2">✓ KOSHER10 applied — $10.00 off!</p>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-center gap-6 py-2 text-xs text-slate-400">
+        <span>🔒 256-bit SSL</span><span>✓ PCI Compliant</span><span>🛡️ Buyer Protection</span>
+      </div>
+    </div>
+
+    <!-- Sticky Summary -->
+    <div class="lg:w-76 xl:w-80">
+      <div class="sticky top-52 bg-white rounded-[2rem] pshadow overflow-hidden">
+        <div class="bg-navy px-5 py-4">
+          <p class="text-white font-semibold text-sm font-display">Order Summary</p>
+          <p id="sum-name" class="text-turquoise/80 text-xs mt-0.5">—</p>
+        </div>
+        <div class="p-5 space-y-2.5 text-sm">
+          <div class="flex justify-between text-slate-600"><span>Package</span><span id="sum-pkg">—</span></div>
+          <div class="flex justify-between text-slate-600"><span>SIM</span><span id="sum-sim">Free</span></div>
+          <div id="sum-dev-row" class="hidden flex justify-between text-slate-600"><span>Device</span><span id="sum-dev">—</span></div>
+          <div class="flex justify-between text-slate-600"><span>Delivery</span><span id="sum-del">Free</span></div>
+          <div class="flex justify-between text-slate-600"><span>Taxes (est.)</span><span id="sum-tax">—</span></div>
+          <div id="sum-disc-row" class="hidden flex justify-between text-teal font-medium"><span>Coupon</span><span>−$10.00</span></div>
+          <div class="border-t border-slate-100 pt-3 space-y-1">
+            <div class="flex justify-between font-bold text-navy text-base"><span>Due Today</span><span id="sum-total">—</span></div>
+            <div class="flex justify-between text-xs text-slate-400"><span>Monthly after</span><span id="sum-mo">—</span></div>
+          </div>
+        </div>
+        <div class="px-5 pb-5 space-y-2">
+          <button onclick="complete()" class="w-full bg-teal text-white font-semibold rounded-xl py-3.5 text-sm hover:opacity-90 transition-all pshadow">
+            Complete Purchase 🔒
+          </button>
+          <button onclick="go(4)" class="w-full text-center text-xs text-teal hover:underline py-1">Edit Order</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS -->
+<div id="success" class="step-in hidden max-w-md mx-auto text-center">
+  <div class="w-16 h-16 bg-teal/10 rounded-full flex items-center justify-center mx-auto mb-5">
+    <svg class="w-8 h-8 text-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+  </div>
+  <h2 class="text-2xl font-bold text-navy mb-1">Order Confirmed!</h2>
+  <p class="text-sm text-slate-500 mb-0.5">Order #<span id="ord-num" class="font-semibold text-navy"></span></p>
+  <p class="text-xs text-slate-400 mb-8">Confirmation sent to your email</p>
+
+  <div class="bg-white rounded-[2rem] pshadow p-6 text-left space-y-4 mb-6">
+    <div><p class="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1">Plan</p><p id="suc-plan" class="text-sm font-semibold text-navy">—</p><p id="suc-plan-d" class="text-xs text-slate-500">—</p></div>
+    <div class="border-t border-slate-50 pt-4"><p class="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1">SIM</p><p id="suc-sim" class="text-sm text-slate-700">—</p></div>
+    <div class="border-t border-slate-50 pt-4"><p class="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1">Delivery</p><p id="suc-del" class="text-sm text-slate-700">—</p></div>
+    <div class="border-t border-slate-50 pt-4 flex justify-between items-center">
+      <div><p class="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1">Total Charged</p><p id="suc-total" class="text-xl font-bold text-navy">—</p></div>
+      <button class="text-xs bg-slate-100 text-slate-600 px-4 py-2 rounded-xl hover:bg-slate-200 transition-all">Download Receipt</button>
+    </div>
+  </div>
+
+  <div class="flex flex-col sm:flex-row gap-3 justify-center">
+    <button class="bg-teal text-white font-semibold rounded-xl px-6 py-3 text-sm hover:opacity-90 transition-all">Manage Account</button>
+    <button onclick="restart()" class="border border-slate-200 text-slate-600 font-medium rounded-xl px-6 py-3 text-sm hover:bg-slate-50 transition-all">New Order</button>
+  </div>
+</div>
+
+</div>
+</main>
+
+<script>
+const S = { step:1, dest:null, dur:null, svc:null, plan:null, sim:null, dev:null, buyDev:null, del:null, pay:'card', coupon:false };
+
+const PLANS = {
+  israel:[
+    {id:'i1',name:'Israel Starter',data:'5GB',talk:false,price:25,save:5,badge:'',features:['5G Network','30-Day Validity','Mobile Hotspot']},
+    {id:'i2',name:'Israel Plus',data:'15GB',talk:true,price:45,save:10,badge:'Most Popular',features:['5G Network','Unlimited Calls to IL','Int\'l SMS','30-Day Validity']},
+    {id:'i3',name:'Israel Premium',data:'Unlimited',talk:true,price:65,save:15,badge:'Best Value',features:['5G Priority Network','Unlimited Everything','30-Day Validity']},
+  ],
+  europe:[
+    {id:'e1',name:'Euro Data',data:'10GB',talk:false,price:35,save:0,badge:'',features:['35+ Countries','4G/5G','90-Day Validity']},
+    {id:'e2',name:'Euro Connect',data:'20GB',talk:true,price:55,save:10,badge:'Most Popular',features:['35+ Countries','Unlimited EU Calls','4G/5G','90-Day Validity']},
+    {id:'e3',name:'Euro Unlimited',data:'Unlimited',talk:true,price:75,save:15,badge:'Premium',features:['35+ Countries','Unlimited Calls & SMS','Priority 5G','90-Day Validity']},
+  ],
+  usa:[
+    {id:'u1',name:'US Basic',data:'10GB',talk:false,price:30,save:0,badge:'',features:['Nationwide 5G','Hotspot','30-Day Validity']},
+    {id:'u2',name:'US Plus',data:'25GB',talk:true,price:50,save:10,badge:'Most Popular',features:['Nationwide 5G','Unlimited Calls & Texts','Hotspot','30-Day Validity']},
+    {id:'u3',name:'US Unlimited',data:'Unlimited',talk:true,price:70,save:20,badge:'Best Value',features:['Nationwide 5G','Unlimited Everything','Priority Data','30-Day Validity']},
+  ],
+  worldwide:[
+    {id:'w1',name:'Global Starter',data:'5GB',talk:false,price:40,save:0,badge:'',features:['100+ Countries','4G','30-Day Validity']},
+    {id:'w2',name:'Global Plus',data:'15GB',talk:true,price:65,save:15,badge:'Most Popular',features:['100+ Countries','Calls to 50 countries','4G/5G','30-Day Validity']},
+    {id:'w3',name:'Global Elite',data:'30GB',talk:true,price:90,save:20,badge:'Premium',features:['100+ Countries','Unlimited Global Calls','Priority 5G','30-Day Validity']},
+  ],
+};
+const DEV_PRICE = {iphone:35,samsung:28,pixel:22};
+const DEV_NAME  = {iphone:'iPhone 15',samsung:'Galaxy S24',pixel:'Pixel 8'};
+
+function go(n) {
+  if(n===2 && (!S.dest||!S.dur||!S.svc)) return;
+  document.querySelectorAll('[id^=step-],[id=success]').forEach(e=>e.classList.add('hidden'));
+  const el = n==='success'?document.getElementById('success'):document.getElementById('step-'+n);
+  el.classList.remove('hidden','step-in'); void el.offsetWidth; el.classList.add('step-in');
+  S.step = n;
+  updateStepper(n);
+  updateMiniBar();
+  if(n===2) renderPlans();
+  if(n===5) calcSummary();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function updateStepper(n) {
+  for(let i=1;i<=5;i++){
+    const d=document.getElementById('s'+i).querySelector('.step-dot');
+    const l=document.getElementById('l'+i);
+    if(i<n){d.className='step-dot w-7 h-7 rounded-full bg-teal text-white flex items-center justify-center text-xs font-semibold';d.innerHTML='✓';document.getElementById('s'+i).querySelector('span').className='text-xs text-teal font-medium hidden sm:block';}
+    else if(i===n){d.className='step-dot w-7 h-7 rounded-full bg-navy text-white flex items-center justify-center text-xs font-semibold';d.innerHTML=i;document.getElementById('s'+i).querySelector('span').className='text-xs text-navy font-medium hidden sm:block';}
+    else{d.className='step-dot w-7 h-7 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center text-xs font-semibold';d.innerHTML=i;document.getElementById('s'+i).querySelector('span').className='text-xs text-slate-400 font-medium hidden sm:block';}
+    if(l) l.className=i<n?'h-0.5 w-10 sm:w-20 bg-teal mx-1 mb-3 transition-all duration-300':'h-0.5 w-10 sm:w-20 bg-slate-200 mx-1 mb-3 transition-all duration-300';
+  }
+}
+
+function pick(key, val, el) {
+  S[key]=val;
+  el.closest('.grid,.flex').querySelectorAll('.sel,.pill').forEach(e=>e.classList.remove('active'));
+  el.classList.add('active');
+  if(S.dest&&S.dur&&S.svc) document.getElementById('btn1').disabled=false;
+}
+
+function simPick(v){
+  S.sim=v;
+  document.getElementById('sim-a').classList.toggle('active',v==='existing');
+  document.getElementById('sim-b').classList.toggle('active',v==='new');
+  document.getElementById('sim-existing-f').classList.toggle('hidden',v!=='existing');
+  document.getElementById('sim-new-f').classList.toggle('hidden',v!=='new');
+}
+
+function devPick(v){
+  S.dev=v;
+  document.getElementById('dev-a').classList.toggle('active',v==='have');
+  document.getElementById('dev-b').classList.toggle('active',v==='buy');
+  document.getElementById('dev-check').classList.toggle('hidden',v!=='have');
+  document.getElementById('dev-cards').classList.toggle('hidden',v!=='buy');
+}
+
+function buyDev(id, el){
+  S.buyDev=id;
+  document.querySelectorAll('#dev-cards .sel').forEach(e=>e.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function delPick(v){
+  S.del=v;
+  document.getElementById('del-a').classList.toggle('active',v==='pickup');
+  document.getElementById('del-b').classList.toggle('active',v==='home');
+  document.getElementById('pickup-f').classList.toggle('hidden',v!=='pickup');
+  document.getElementById('home-f').classList.toggle('hidden',v!=='home');
+  calcSummary();
+}
+
+function payPick(v, el){
+  S.pay=v;
+  document.querySelectorAll('.pm').forEach(e=>e.classList.remove('active','border-teal','bg-teal/5'));
+  el.classList.add('active');
+  document.getElementById('card-fields').classList.toggle('hidden',v!=='card');
+  document.getElementById('alt-pay').classList.toggle('hidden',v==='card');
+}
+
+function renderPlans(){
+  const dest=S.dest||'israel';
+  document.getElementById('il-notice').classList.toggle('hidden',dest!=='israel');
+  const list=(PLANS[dest]||[]).filter(p=>S.svc==='data'?!p.talk:true);
+  document.getElementById('plan-grid').innerHTML=list.map(p=>`
+    <div class="relative bg-white rounded-[2rem] pshadow p-6 cursor-pointer hover:shadow-lg transition-all border-2 ${p.badge==='Most Popular'?'border-teal':'border-transparent'}" onclick="pickPlan('${p.id}',this)">
+      ${p.badge?`<div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-teal text-white text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">${p.badge}</div>`:''}
+      <div class="mb-4 mt-1">
+        <h3 class="font-bold text-navy text-base font-display">${p.name}</h3>
+        <div class="flex items-baseline gap-1 mt-2"><span class="text-3xl font-bold text-teal">$${p.price}</span><span class="text-sm text-slate-400">/mo</span></div>
+        ${p.save?`<div class="text-xs text-turquoise font-medium mt-0.5">Save $${p.save}/mo</div>`:''}
+      </div>
+      <div class="space-y-1.5 mb-5">
+        <div class="flex items-center gap-2 text-sm font-semibold text-navy"><span>📶</span>${p.data} Data</div>
+        ${p.talk?'<div class="flex items-center gap-2 text-xs text-slate-500"><span class="text-teal">✓</span>Talk &amp; Text Included</div>':''}
+        ${p.features.map(f=>`<div class="flex items-center gap-2 text-xs text-slate-500"><span class="text-slate-300">•</span>${f}</div>`).join('')}
+      </div>
+      <button class="w-full bg-navy text-white text-sm font-semibold py-2.5 rounded-xl hover:bg-teal transition-all duration-200">Select Plan</button>
+    </div>`).join('');
+}
+
+function pickPlan(id,el){
+  const dest=S.dest||'israel';
+  S.plan=PLANS[dest].find(p=>p.id===id);
+  document.querySelectorAll('#plan-grid > div').forEach(e=>e.classList.remove('ring-2','ring-teal/30'));
+  el.classList.add('ring-2','ring-teal/30');
+  setTimeout(()=>go(3),250);
+}
+
+function updateMiniBar(){
+  const bar=document.getElementById('mini-bar');
+  if(S.step>1&&S.dest){
+    bar.classList.remove('hidden');
+    const dmap={israel:'🇮🇱 Israel',europe:'🇪🇺 Europe',usa:'🇺🇸 USA',worldwide:'🌍 Worldwide'};
+    const smap={data:'Data Only',full:'Talk, Text & Data'};
+    document.getElementById('mini-tags').innerHTML=[
+      S.dest&&`<span class="bg-white border border-teal/20 text-teal px-2.5 py-1 rounded-full">${dmap[S.dest]}</span>`,
+      S.dur&&`<span class="bg-white border border-teal/20 text-teal px-2.5 py-1 rounded-full">${S.dur}</span>`,
+      S.svc&&`<span class="bg-white border border-teal/20 text-teal px-2.5 py-1 rounded-full">${smap[S.svc]}</span>`,
+      S.plan&&`<span class="bg-white border border-teal/20 text-teal px-2.5 py-1 rounded-full">${S.plan.name} · $${S.plan.price}/mo</span>`,
+    ].filter(Boolean).join('');
+  } else bar.classList.add('hidden');
+}
+
+function calcSummary(){
+  if(!S.plan) return;
+  const p=S.plan;
+  const sim=S.sim==='new'?4.99:0;
+  const dev=S.buyDev?DEV_PRICE[S.buyDev]:0;
+  const del=S.del==='home'?4.99:0;
+  const disc=S.coupon?10:0;
+  const tax=+((p.price+sim+del)*0.08).toFixed(2);
+  const total=+(p.price+sim+del+tax+dev-disc).toFixed(2);
+  document.getElementById('sum-name').textContent=p.name+' · '+p.data;
+  document.getElementById('sum-pkg').textContent='$'+p.price+'/mo';
+  document.getElementById('sum-sim').textContent=sim?'$'+sim:'Free';
+  document.getElementById('sum-del').textContent=del?'$'+del:'Free';
+  document.getElementById('sum-tax').textContent='$'+tax;
+  document.getElementById('sum-total').textContent='$'+total;
+  document.getElementById('sum-mo').textContent='$'+(p.price+(dev||0)).toFixed(2)+'/mo';
+  const dr=document.getElementById('sum-dev-row');
+  if(dev){dr.classList.remove('hidden');document.getElementById('sum-dev').textContent='$'+dev+'/mo';}
+  else dr.classList.add('hidden');
+  document.getElementById('sum-disc-row').classList.toggle('hidden',!S.coupon);
+}
+
+function applyCoupon(){
+  const v=document.getElementById('coupon').value.trim().toUpperCase();
+  if(['KOSHER10','SAVE10','SKW10'].includes(v)){
+    S.coupon=true;
+    document.getElementById('coupon-ok').classList.remove('hidden');
+    calcSummary();
+  }
+}
+
+function complete(){
+  const n='SKW-'+Math.random().toString(36).substr(2,6).toUpperCase();
+  document.getElementById('ord-num').textContent=n;
+  document.getElementById('suc-plan').textContent=S.plan?.name||'—';
+  document.getElementById('suc-plan-d').textContent=S.plan?S.plan.data+' · $'+S.plan.price+'/mo':'—';
+  document.getElementById('suc-sim').textContent=S.sim==='new'?'New SIM — shipping with order':'Using existing SIM';
+  document.getElementById('suc-del').textContent=S.del==='pickup'?'Store Pickup — ready in 2 hours':'Home Delivery — 3–5 business days';
+  document.getElementById('suc-total').textContent=document.getElementById('sum-total').textContent;
+  document.getElementById('stepper').closest('.fixed').classList.add('hidden');
+  document.getElementById('mini-bar').classList.add('hidden');
+  document.getElementById('main-content').style.paddingTop='4rem';
+  go('success');
+}
+
+function restart(){
+  Object.assign(S,{step:1,dest:null,dur:null,svc:null,plan:null,sim:null,dev:null,buyDev:null,del:null,pay:'card',coupon:false});
+  document.querySelectorAll('.sel,.pill').forEach(e=>e.classList.remove('active'));
+  document.getElementById('stepper').closest('.fixed').classList.remove('hidden');
+  document.getElementById('main-content').style.paddingTop='';
+  document.getElementById('btn1').disabled=true;
+  document.getElementById('coupon').value='';
+  document.getElementById('coupon-ok').classList.add('hidden');
+  go(1);
+}
+</script>
+</body>
+</html>
