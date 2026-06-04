@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simply Kosher Wireless — Checkout</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: { extend: {
+    fontFamily: { sans:['Inter','sans-serif'], display:['Outfit','sans-serif'] },
+    colors: { navy:'#0F172A', teal:'#0D9488', turquoise:'#2DD4BF', muted:'#F8FAFC' }
+  }}
+}
+</script>
+<style>
+  * { font-family:'Inter',sans-serif; }
+  h1,h2,h3,h4,h5 { font-family:'Outfit',sans-serif; }
+
+  /* Slide transitions */
+  .panel { position:absolute; inset:0; overflow-y:auto; padding:2.5rem 2rem 6rem; }
+  .panel.enter-right { animation:slideInRight .35s cubic-bezier(.22,1,.36,1) both; }
+  .panel.enter-left  { animation:slideInLeft  .35s cubic-bezier(.22,1,.36,1) both; }
+  @keyframes slideInRight { from{opacity:0;transform:translateX(48px)} to{opacity:1;transform:translateX(0)} }
+  @keyframes slideInLeft  { from{opacity:0;transform:translateX(-48px)} to{opacity:1;transform:translateX(0)} }
+
+  /* Selection cards */
+  .card { transition:all .15s ease; cursor:pointer; border:2px solid transparent; }
+  .card:hover { border-color:#0D9488; background:rgba(13,148,136,.04); }
+  .card.on { border-color:#0D9488; background:rgba(13,148,136,.06); box-shadow:0 0 0 3px rgba(13,148,136,.12); }
+  .chip { transition:all .15s ease; cursor:pointer; }
+  .chip:hover { border-color:#0D9488; color:#0D9488; }
+  .chip.on { background:#0D9488; color:#fff; border-color:#0D9488; }
+
+  /* Inputs */
+  input,select,textarea { transition:border-color .15s,box-shadow .15s; }
+  input:focus,select:focus { outline:none; border-color:#0D9488; box-shadow:0 0 0 3px rgba(13,148,136,.12); }
+
+  /* Premium shadow */
+  .ps { box-shadow:0 4px 6px -1px rgb(0 0 0/.05),0 2px 4px -2px rgb(0 0 0/.05),0 20px 25px -5px rgb(0 0 0/.03); }
+
+  /* Pay method */
+  .pm { transition:all .15s; }
+  .pm.on { border-color:#0D9488 !important; background:rgba(13,148,136,.06); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar{width:4px} ::-webkit-scrollbar-thumb{background:#334155;border-radius:2px}
+  .panel::-webkit-scrollbar-thumb{background:#cbd5e1}
+</style>
+</head>
+<body class="bg-navy overflow-hidden h-screen text-navy">
+
+<!-- ROOT LAYOUT: LEFT PANEL + RIGHT CONTENT -->
+<div class="flex h-screen">
+
+  <!-- ─── LEFT: DARK SIDEBAR ─── -->
+  <aside class="hidden lg:flex flex-col w-72 xl:w-80 bg-navy flex-shrink-0 border-r border-white/5 relative">
+
+    <!-- Logo -->
+    <div class="px-8 pt-8 pb-6 border-b border-white/5">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-xl bg-teal/20 flex items-center justify-center">
+          <span class="text-turquoise font-bold text-sm font-display">SK</span>
+        </div>
+        <div>
+          <div class="text-white font-semibold text-sm font-display leading-tight">Simply Kosher</div>
+          <div class="text-white/40 text-[10px] tracking-widest uppercase">Wireless</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step list -->
+    <nav class="flex-1 px-6 py-8 space-y-1" id="step-nav">
+      <div id="nav1" class="step-nav-item flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/10 cursor-pointer" onclick="go(1,null)">
+        <div id="nd1" class="w-7 h-7 rounded-full bg-teal text-white flex items-center justify-center text-xs font-semibold flex-shrink-0">1</div>
+        <div><div class="text-white text-sm font-semibold">Find Plan</div><div class="text-white/40 text-xs" id="ns1">Destination, duration, type</div></div>
+      </div>
+      <div id="nav2" class="step-nav-item flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer opacity-40" onclick="go(2,null)">
+        <div id="nd2" class="w-7 h-7 rounded-full bg-white/10 text-white/40 flex items-center justify-center text-xs font-semibold flex-shrink-0">2</div>
+        <div><div class="text-white/60 text-sm font-semibold">Choose Plan</div><div class="text-white/30 text-xs" id="ns2">Select your package</div></div>
+      </div>
+      <div id="nav3" class="step-nav-item flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer opacity-40" onclick="go(3,null)">
+        <div id="nd3" class="w-7 h-7 rounded-full bg-white/10 text-white/40 flex items-center justify-center text-xs font-semibold flex-shrink-0">3</div>
+        <div><div class="text-white/60 text-sm font-semibold">SIM &amp; Device</div><div class="text-white/30 text-xs" id="ns3">Set up your service</div></div>
+      </div>
+      <div id="nav4" class="step-nav-item flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer opacity-40" onclick="go(4,null)">
+        <div id="nd4" class="w-7 h-7 rounded-full bg-white/10 text-white/40 flex items-center justify-center text-xs font-semibold flex-shrink-0">4</div>
+        <div><div class="text-white/60 text-sm font-semibold">Delivery</div><div class="text-white/30 text-xs" id="ns4">Fulfillment &amp; details</div></div>
+      </div>
+      <div id="nav5" class="step-nav-item flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer opacity-40" onclick="go(5,null)">
+        <div id="nd5" class="w-7 h-7 rounded-full bg-white/10 text-white/40 flex items-center justify-center text-xs font-semibold flex-shrink-0">5</div>
+        <div><div class="text-white/60 text-sm font-semibold">Checkout</div><div class="text-white/30 text-xs" id="ns5">Review &amp; pay</div></div>
+      </div>
+    </nav>
+
+    <!-- Sidebar order summary -->
+    <div id="side-summary" class="hidden mx-6 mb-6 bg-white/5 rounded-2xl p-4 border border-white/5">
+      <p class="text-white/50 text-[10px] uppercase tracking-widest mb-3">Order Summary</p>
+      <div id="ss-plan" class="text-white font-semibold text-sm mb-1">—</div>
+      <div id="ss-data" class="text-white/40 text-xs mb-3">—</div>
+      <div class="space-y-1.5 text-xs">
+        <div class="flex justify-between text-white/50"><span>Package</span><span id="ss-pkg">—</span></div>
+        <div class="flex justify-between text-white/50"><span>SIM</span><span id="ss-sim">Free</span></div>
+        <div id="ss-dev-r" class="hidden flex justify-between text-white/50"><span>Device</span><span id="ss-dev">—</span></div>
+        <div class="flex justify-between text-white/50"><span>Delivery</span><span id="ss-del">Free</span></div>
+        <div class="border-t border-white/10 pt-2 flex justify-between text-white font-semibold text-sm"><span>Total</span><span id="ss-total">—</span></div>
+      </div>
+    </div>
+
+    <div class="px-6 pb-6">
+      <button onclick="restart()" class="w-full text-xs text-white/30 hover:text-white/60 transition-all text-center py-2">↺ Start Over</button>
+    </div>
+  </aside>
+
+  <!-- ─── RIGHT: CONTENT AREA ─── -->
+  <div class="flex-1 flex flex-col bg-muted overflow-hidden">
+
+    <!-- Mobile header -->
+    <div class="lg:hidden flex items-center justify-between px-5 py-4 bg-navy border-b border-white/5">
+      <div class="flex items-center gap-2">
+        <div class="w-6 h-6 rounded-lg bg-teal/20 flex items-center justify-center"><span class="text-turquoise text-xs font-bold">SK</span></div>
+        <span class="text-white font-semibold text-sm font-display">Simply Kosher Wireless</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span id="mob-step-label" class="text-white/40 text-xs">Step 1 of 5</span>
+        <button onclick="restart()" class="text-white/30 text-xs hover:text-white/60">↺</button>
+      </div>
+    </div>
+
+    <!-- Mobile progress bar -->
+    <div class="lg:hidden h-1 bg-white/10">
+      <div id="mob-bar" class="h-full bg-teal transition-all duration-500" style="width:20%"></div>
+    </div>
+
+    <!-- Slide container -->
+    <div class="flex-1 relative overflow-hidden">
+
+      <!-- ── STEP 1 ── -->
+      <div id="step-1" class="panel">
+        <div class="max-w-lg mx-auto">
+          <div class="mb-8">
+            <p class="text-xs font-semibold text-teal uppercase tracking-[0.3em] mb-3 flex items-center gap-2">
+              <span class="w-1 h-3 bg-teal rounded-full inline-block"></span>Step 1 of 5
+            </p>
+            <h1 class="text-3xl font-bold text-navy mb-2">Find Your Plan</h1>
+            <p class="text-slate-500 text-sm">Answer 3 quick questions — your plan updates instantly.</p>
+          </div>
+
+          <!-- Destination -->
+          <div class="mb-6">
+            <p class="text-sm font-semibold text-navy mb-3">Where will you use the service?</p>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="card bg-white ps rounded-2xl p-5" onclick="pick('dest','israel',this)">
+                <div class="text-3xl mb-2">🇮🇱</div>
+                <div class="font-semibold text-navy text-sm">Israel</div>
+                <div class="text-xs text-slate-400 mt-0.5">Local &amp; international</div>
+              </div>
+              <div class="card bg-white ps rounded-2xl p-5" onclick="pick('dest','europe',this)">
+                <div class="text-3xl mb-2">🇪🇺</div>
+                <div class="font-semibold text-navy text-sm">Europe</div>
+                <div class="text-xs text-slate-400 mt-0.5">35+ countries</div>
+              </div>
+              <div class="card bg-white ps rounded-2xl p-5" onclick="pick('dest','usa',this)">
+                <div class="text-3xl mb-2">🇺🇸</div>
+                <div class="font-semibold text-navy text-sm">United States</div>
+                <div class="text-xs text-slate-400 mt-0.5">Nationwide 5G</div>
+              </div>
+              <div class="card bg-white ps rounded-2xl p-5" onclick="pick('dest','worldwide',this)">
+                <div class="text-3xl mb-2">🌍</div>
+                <div class="font-semibold text-navy text-sm">Worldwide</div>
+                <div class="text-xs text-slate-400 mt-0.5">100+ countries</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Duration -->
+          <div class="mb-6">
+            <p class="text-sm font-semibold text-navy mb-3">How long do you need it?</p>
+            <div class="flex flex-wrap gap-2">
+              <div class="chip border-2 border-slate-200 bg-white rounded-full px-5 py-2.5 text-sm font-medium text-slate-600 ps" onclick="pick('dur','1–5 Days',this)">1–5 Days</div>
+              <div class="chip border-2 border-slate-200 bg-white rounded-full px-5 py-2.5 text-sm font-medium text-slate-600 ps" onclick="pick('dur','Up to 15 Days',this)">Up to 15 Days</div>
+              <div class="chip border-2 border-slate-200 bg-white rounded-full px-5 py-2.5 text-sm font-medium text-slate-600 ps" onclick="pick('dur','1–3 Months',this)">1–3 Months</div>
+              <div class="chip border-2 border-slate-200 bg-white rounded-full px-5 py-2.5 text-sm font-medium text-slate-600 ps" onclick="pick('dur','6+ Months',this)">6+ Months</div>
+            </div>
+          </div>
+
+          <!-- Service Type -->
+          <div class="mb-8">
+            <p class="text-sm font-semibold text-navy mb-3">What type of service?</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="card bg-white ps rounded-2xl p-5 flex gap-4 items-start" onclick="pick('svc','data',this)">
+                <div class="w-10 h-10 bg-teal/10 rounded-xl flex items-center justify-center flex-shrink-0 text-lg">📡</div>
+                <div><div class="font-semibold text-navy text-sm">Data Only</div><div class="text-xs text-slate-400 mt-1">Browsing, apps &amp; streaming</div></div>
+              </div>
+              <div class="card bg-white ps rounded-2xl p-5 flex gap-4 items-start" onclick="pick('svc','full',this)">
+                <div class="w-10 h-10 bg-teal/10 rounded-xl flex items-center justify-center flex-shrink-0 text-lg">📱</div>
+                <div><div class="font-semibold text-navy text-sm">Talk, Text &amp; Data</div><div class="text-xs text-slate-400 mt-1">Full service with calls</div></div>
+              </div>
+            </div>
+          </div>
+
+          <button id="btn1" onclick="go(2,'right')" disabled
+            class="w-full bg-teal text-white font-semibold rounded-xl py-4 text-sm hover:opacity-90 transition-all disabled:opacity-25 disabled:cursor-not-allowed">
+            View Matching Plans →
+          </button>
+        </div>
+      </div>
+
+      <!-- ── STEP 2 ── -->
+      <div id="step-2" class="panel hidden">
+        <div class="max-w-2xl mx-auto">
+          <div class="flex items-start justify-between mb-6">
+            <div>
+              <p class="text-xs font-semibold text-teal uppercase tracking-[0.3em] mb-2 flex items-center gap-2"><span class="w-1 h-3 bg-teal rounded-full"></span>Step 2 of 5</p>
+              <h2 class="text-3xl font-bold text-navy">Choose Your Plan</h2>
+              <p class="text-slate-500 text-sm mt-1">Plans matched to your selections</p>
+            </div>
+            <button onclick="go(1,'left')" class="text-sm text-slate-400 hover:text-navy mt-1 flex-shrink-0">← Back</button>
+          </div>
+
+          <div id="il-notice" class="hidden mb-5 p-4 bg-amber-50 border border-amber-200 rounded-2xl flex gap-3 items-start">
+            <span class="text-amber-500 mt-0.5 flex-shrink-0">⚠️</span>
+            <div>
+              <p class="text-sm font-semibold text-amber-800">Device Compatibility Notice</p>
+              <p class="text-xs text-amber-700 mt-0.5">Compatible only with supported Israeli devices. <button class="underline" onclick="document.getElementById('compat').classList.toggle('hidden')">Learn more</button></p>
+              <p id="compat" class="hidden text-xs text-amber-700 mt-2 bg-amber-100 p-3 rounded-xl">Supported: iPhone 13+ (IL), Samsung Galaxy S21+ (IL), and devices with Israeli frequency bands (Band 1, 3, 7, 20).</p>
+            </div>
+          </div>
+
+          <div id="plan-grid" class="space-y-4"></div>
+        </div>
+      </div>
+
+      <!-- ── STEP 3 ── -->
+      <div id="step-3" class="panel hidden">
+        <div class="max-w-lg mx-auto">
+          <div class="flex items-start justify-between mb-6">
+            <div>
+              <p class="text-xs font-semibold text-teal uppercase tracking-[0.3em] mb-2 flex items-center gap-2"><span class="w-1 h-3 bg-teal rounded-full"></span>Step 3 of 5</p>
+              <h2 class="text-3xl font-bold text-navy">SIM &amp; Device</h2>
+              <p class="text-slate-500 text-sm mt-1">Set up your SIM and optionally add a phone</p>
+            </div>
+            <button onclick="go(2,'left')" class="text-sm text-slate-400 hover:text-navy mt-1 flex-shrink-0">← Back</button>
+          </div>
+
+          <!-- SIM -->
+          <div class="mb-6">
+            <p class="text-sm font-semibold text-navy mb-3">SIM Card</p>
+            <div class="grid grid-cols-2 gap-3 mb-3">
+              <div id="sa" class="card bg-white ps rounded-2xl p-5" onclick="simPick('existing')">
+                <div class="w-8 h-8 bg-teal/10 rounded-xl flex items-center justify-center mb-3 text-base">💳</div>
+                <div class="font-semibold text-navy text-sm">Bring My SIM</div>
+                <div class="text-xs text-slate-400 mt-1">Use existing SIM card</div>
+                <div class="text-xs text-teal font-semibold mt-2">Free</div>
+              </div>
+              <div id="sb" class="card bg-white ps rounded-2xl p-5" onclick="simPick('new')">
+                <div class="w-8 h-8 bg-teal/10 rounded-xl flex items-center justify-center mb-3 text-base">📦</div>
+                <div class="font-semibold text-navy text-sm">New SIM Card</div>
+                <div class="text-xs text-slate-400 mt-1">Delivered or pickup</div>
+                <div class="text-xs text-slate-500 font-semibold mt-2">$4.99</div>
+              </div>
+            </div>
+            <div id="sim-ef" class="hidden space-y-2.5">
+              <input type="tel" placeholder="Mobile Number" class="w-full border border-slate-200 bg-white rounded-xl px-4 py-2.5 text-sm ps">
+              <input type="text" placeholder="Current Carrier (optional)" class="w-full border border-slate-200 bg-white rounded-xl px-4 py-2.5 text-sm ps">
+            </div>
+            <div id="sim-nf" class="hidden text-xs text-teal bg-teal/5 rounded-xl p-3 border border-teal/10">📦 Estimated delivery: 3–5 business days · Free store pickup available at checkout</div>
+          </div>
+
+          <!-- Device -->
+          <div class="mb-8">
+            <div class="flex items-center justify-between mb-3">
+              <p class="text-sm font-semibold text-navy">Device <span class="text-slate-400 font-normal text-xs">(Optional)</span></p>
+              <button onclick="go(4,'right')" class="text-xs text-teal hover:underline">Skip →</button>
+            </div>
+            <div class="grid grid-cols-2 gap-3 mb-3">
+              <div id="da" class="card bg-white ps rounded-2xl p-5" onclick="devPick('have')">
+                <div class="w-8 h-8 bg-slate-100 rounded-xl flex items-center justify-center mb-3 text-base">✓</div>
+                <div class="font-semibold text-navy text-sm">I Have a Device</div>
+                <div class="text-xs text-slate-400 mt-1">Bring your phone</div>
+              </div>
+              <div id="db" class="card bg-white ps rounded-2xl p-5" onclick="devPick('buy')">
+                <div class="w-8 h-8 bg-slate-100 rounded-xl flex items-center justify-center mb-3 text-base">🛒</div>
+                <div class="font-semibold text-navy text-sm">Buy a Device</div>
+                <div class="text-xs text-slate-400 mt-1">Browse smartphones</div>
+              </div>
+            </div>
+            <div id="dev-check" class="hidden mb-3">
+              <input type="text" placeholder="Enter model to check compatibility…" class="w-full border border-slate-200 bg-white rounded-xl px-4 py-2.5 text-sm ps">
+            </div>
+            <div id="dev-cards" class="hidden grid grid-cols-3 gap-3">
+              <div class="card bg-white ps rounded-2xl p-4 text-center" onclick="buyDev('iphone',this)">
+                <div class="text-3xl mb-2">📱</div>
+                <div class="text-xs font-semibold text-navy">iPhone 15</div>
+                <div class="text-[11px] text-slate-400">128GB</div>
+                <div class="text-teal font-bold text-sm mt-1.5">$35/mo</div>
+                <div class="text-[10px] text-slate-400">or $849</div>
+              </div>
+              <div class="card bg-white ps rounded-2xl p-4 text-center" onclick="buyDev('samsung',this)">
+                <div class="text-3xl mb-2">📱</div>
+                <div class="text-xs font-semibold text-navy">Galaxy S24</div>
+                <div class="text-[11px] text-slate-400">256GB</div>
+                <div class="text-teal font-bold text-sm mt-1.5">$28/mo</div>
+                <div class="text-[10px] text-slate-400">or $699</div>
+              </div>
+              <div class="card bg-white ps rounded-2xl p-4 text-center" onclick="buyDev('pixel',this)">
+                <div class="text-3xl mb-2">📱</div>
+                <div class="text-xs font-semibold text-navy">Pixel 8</div>
+                <div class="text-[11px] text-slate-400">128GB</div>
+                <div class="text-teal font-bold text-sm mt-1.5">$22/mo</div>
+                <div class="text-[10px] text-slate-400">or $549</div>
+              </div>
+            </div>
+          </div>
+
+          <button onclick="go(4,'right')" class="w-full bg-teal text-white font-semibold rounded-xl py-4 text-sm hover:opacity-90 transition-all">Continue to Delivery →</button>
+        </div>
+      </div>
+
+      <!-- ── STEP 4 ── -->
+      <div id="step-4" class="panel hidden">
+        <div class="max-w-lg mx-auto">
+          <div class="flex items-start justify-between mb-6">
+            <div>
+              <p class="text-xs font-semibold text-teal uppercase tracking-[0.3em] mb-2 flex items-center gap-2"><span class="w-1 h-3 bg-teal rounded-full"></span>Step 4 of 5</p>
+              <h2 class="text-3xl font-bold text-navy">Delivery &amp; Details</h2>
+              <p class="text-slate-500 text-sm mt-1">Almost there — just a few details</p>
+            </div>
+            <button onclick="go(3,'left')" class="text-sm text-slate-400 hover:text-navy mt-1 flex-shrink-0">← Back</button>
+          </div>
+
+          <!-- Delivery -->
+          <div class="mb-6">
+            <p class="text-sm font-semibold text-navy mb-3">How would you like to receive your SIM?</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+              <div id="dela" class="card bg-white ps rounded-2xl p-5 flex gap-4 items-start" onclick="delPick('pickup')">
+                <div class="w-10 h-10 bg-teal/10 rounded-xl flex items-center justify-center flex-shrink-0 text-xl">🏪</div>
+                <div><div class="font-semibold text-navy text-sm">Store Pickup</div><div class="text-xs text-slate-400 mt-1">Ready in 2 hours</div><div class="text-xs text-teal font-semibold mt-1.5">Free</div></div>
+              </div>
+              <div id="delb" class="card bg-white ps rounded-2xl p-5 flex gap-4 items-start" onclick="delPick('home')">
+                <div class="w-10 h-10 bg-teal/10 rounded-xl flex items-center justify-center flex-shrink-0 text-xl">🚚</div>
+                <div><div class="font-semibold text-navy text-sm">Home Delivery</div><div class="text-xs text-slate-400 mt-1">3–5 business days</div><div class="text-xs text-slate-500 font-semibold mt-1.5">$4.99</div></div>
+              </div>
+            </div>
+            <div id="pickup-f" class="hidden space-y-2.5">
+              <select class="w-full border border-slate-200 bg-white rounded-xl px-4 py-2.5 text-sm ps">
+                <option value="">Select store location…</option>
+                <option>Manhattan — 123 W 48th St</option>
+                <option>Brooklyn — 456 Ocean Ave</option>
+                <option>Boro Park — 4418 13th Ave</option>
+                <option>Queens — 789 Jamaica Ave</option>
+              </select>
+              <input type="date" class="w-full border border-slate-200 bg-white rounded-xl px-4 py-2.5 text-sm ps">
+            </div>
+            <div id="home-f" class="hidden space-y-2.5">
+              <input type="text" placeholder="Street Address" class="w-full border border-slate-200 bg-white rounded-xl px-4 py-2.5 text-sm ps">
+              <div class="grid grid-cols-2 gap-2.5">
+                <input type="text" placeholder="City" class="border border-slate-200 bg-white rounded-xl px-4 py-2.5 text-sm ps">
+                <input type="text" placeholder="ZIP Code" class="border border-slate-200 bg-white rounded-xl px-4 py-2.5 text-sm ps">
+              </div>
+              <div class="text-xs text-teal bg-teal/5 border border-teal/10 rounded-xl p-3">📦 3–5 business days · $4.99 shipping</div>
+            </div>
+          </div>
+
+          <!-- Account -->
+          <div class="bg-white ps rounded-2xl p-5 mb-8">
+            <p class="text-sm font-semibold text-navy mb-4">Your Details</p>
+            <div class="space-y-2.5">
+              <input type="text" placeholder="Full Name *" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+              <input type="email" placeholder="Email Address *" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+              <input type="tel" placeholder="Phone Number *" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+              <label class="flex items-center gap-2 cursor-pointer pt-1">
+                <input type="checkbox" class="rounded border-slate-300 accent-teal">
+                <span class="text-sm text-slate-600">Create an account for easy management</span>
+              </label>
+            </div>
+            <p class="text-xs text-slate-400 mt-3">Guest checkout available · Encrypted &amp; secure</p>
+          </div>
+
+          <button onclick="go(5,'right')" class="w-full bg-teal text-white font-semibold rounded-xl py-4 text-sm hover:opacity-90 transition-all">Review &amp; Checkout →</button>
+        </div>
+      </div>
+
+      <!-- ── STEP 5 ── -->
+      <div id="step-5" class="panel hidden">
+        <div class="max-w-xl mx-auto">
+          <div class="flex items-start justify-between mb-6">
+            <div>
+              <p class="text-xs font-semibold text-teal uppercase tracking-[0.3em] mb-2 flex items-center gap-2"><span class="w-1 h-3 bg-teal rounded-full"></span>Step 5 of 5</p>
+              <h2 class="text-3xl font-bold text-navy">Review &amp; Pay</h2>
+              <p class="text-slate-500 text-sm mt-1">You're one step away from staying connected</p>
+            </div>
+            <button onclick="go(4,'left')" class="text-sm text-slate-400 hover:text-navy mt-1 flex-shrink-0">← Back</button>
+          </div>
+
+          <!-- Order Review Card -->
+          <div class="bg-navy rounded-[2rem] p-5 mb-5">
+            <p class="text-white/50 text-[10px] uppercase tracking-widest mb-3">Your Order</p>
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <div id="rev-plan" class="text-white font-bold text-base font-display">—</div>
+                <div id="rev-data" class="text-white/50 text-xs mt-0.5">—</div>
+              </div>
+              <button onclick="go(1,'left')" class="text-teal text-xs hover:underline">Edit</button>
+            </div>
+            <div class="space-y-2 text-xs border-t border-white/10 pt-3">
+              <div class="flex justify-between text-white/50"><span>Package</span><span id="rev-pkg">—</span></div>
+              <div class="flex justify-between text-white/50"><span>SIM</span><span id="rev-sim">Free</span></div>
+              <div id="rev-dev-r" class="hidden flex justify-between text-white/50"><span>Device</span><span id="rev-dev">—</span></div>
+              <div class="flex justify-between text-white/50"><span>Delivery</span><span id="rev-del">Free</span></div>
+              <div class="flex justify-between text-white/50"><span>Taxes (est.)</span><span id="rev-tax">—</span></div>
+              <div id="rev-disc-r" class="hidden flex justify-between text-turquoise font-semibold"><span>Coupon</span><span>−$10.00</span></div>
+              <div class="flex justify-between text-white font-bold text-base pt-2 border-t border-white/10"><span>Due Today</span><span id="rev-total">—</span></div>
+              <div class="flex justify-between text-white/40 text-[11px]"><span>Monthly after</span><span id="rev-mo">—</span></div>
+            </div>
+          </div>
+
+          <!-- Payment -->
+          <div class="bg-white ps rounded-[2rem] p-5 mb-4">
+            <p class="text-sm font-semibold text-navy mb-4">Payment Method</p>
+            <div class="grid grid-cols-4 gap-2 mb-4">
+              <button id="pm1" class="pm on border-2 border-teal bg-teal/5 rounded-xl py-3 px-1 text-xs font-medium transition-all" onclick="payPick('card',this)">💳<br><span class="text-[10px]">Card</span></button>
+              <button id="pm2" class="pm border-2 border-slate-100 rounded-xl py-3 px-1 text-xs font-medium transition-all" onclick="payPick('apple',this)"><br><span class="text-[10px]">Apple Pay</span></button>
+              <button id="pm3" class="pm border-2 border-slate-100 rounded-xl py-3 px-1 text-xs font-medium transition-all" onclick="payPick('google',this)">G<br><span class="text-[10px]">Google Pay</span></button>
+              <button id="pm4" class="pm border-2 border-slate-100 rounded-xl py-3 px-1 text-xs font-medium transition-all" onclick="payPick('paypal',this)">🅿️<br><span class="text-[10px]">PayPal</span></button>
+            </div>
+            <div id="card-f" class="space-y-2.5">
+              <input type="text" placeholder="Card Number" maxlength="19" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+              <div class="grid grid-cols-2 gap-2.5">
+                <input type="text" placeholder="MM / YY" class="border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+                <input type="text" placeholder="CVV" maxlength="4" class="border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+              </div>
+              <input type="text" placeholder="Name on Card" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+            </div>
+            <div id="alt-f" class="hidden text-sm text-slate-500 bg-slate-50 rounded-xl p-4 text-center">You'll complete payment securely on the next screen.</div>
+          </div>
+
+          <!-- Coupon -->
+          <div class="bg-white ps rounded-2xl p-5 mb-6">
+            <p class="text-sm font-semibold text-navy mb-3">Coupon Code</p>
+            <div class="flex gap-2">
+              <input id="coupon" type="text" placeholder="Enter code…" class="flex-1 border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+              <button onclick="applyCoupon()" class="bg-navy text-white text-sm font-medium rounded-xl px-4 py-2.5 hover:opacity-80 transition-all">Apply</button>
+            </div>
+            <p id="coupon-ok" class="hidden text-xs text-teal font-medium mt-2">✓ Code applied — $10.00 off!</p>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-center gap-5 text-xs text-slate-400 mb-6">
+            <span>🔒 256-bit SSL</span><span>✓ PCI Compliant</span><span>🛡️ Buyer Protection</span>
+          </div>
+
+          <button onclick="complete()" class="w-full bg-teal text-white font-bold rounded-xl py-4 text-sm hover:opacity-90 transition-all ps">
+            Complete Purchase 🔒
+          </button>
+          <button onclick="go(4,'left')" class="w-full text-center text-xs text-teal hover:underline mt-3 py-1">Edit Order</button>
+        </div>
+      </div>
+
+      <!-- ── SUCCESS ── -->
+      <div id="success" class="panel hidden">
+        <div class="max-w-md mx-auto text-center">
+          <div class="w-20 h-20 bg-teal/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg class="w-10 h-10 text-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+          </div>
+          <h2 class="text-3xl font-bold text-navy mb-1">You're Connected!</h2>
+          <p class="text-slate-500 text-sm mb-1">Order #<span id="ord" class="font-semibold text-navy"></span></p>
+          <p class="text-slate-400 text-xs mb-8">Confirmation sent to your email</p>
+
+          <div class="bg-white ps rounded-[2rem] p-6 text-left space-y-4 mb-6">
+            <div>
+              <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-1">Plan</p>
+              <p id="suc-plan" class="text-sm font-semibold text-navy">—</p>
+              <p id="suc-detail" class="text-xs text-slate-500">—</p>
+            </div>
+            <div class="border-t border-slate-50 pt-4">
+              <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-1">SIM</p>
+              <p id="suc-sim" class="text-sm text-slate-700">—</p>
+            </div>
+            <div class="border-t border-slate-50 pt-4">
+              <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-1">Delivery</p>
+              <p id="suc-del" class="text-sm text-slate-700">—</p>
+            </div>
+            <div class="border-t border-slate-50 pt-4 flex items-center justify-between">
+              <div>
+                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-1">Total Charged</p>
+                <p id="suc-total" class="text-2xl font-bold text-navy">—</p>
+              </div>
+              <button class="text-xs bg-slate-100 text-slate-600 px-4 py-2.5 rounded-xl hover:bg-slate-200 transition-all font-medium">Download Receipt</button>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-3 justify-center">
+            <button class="bg-teal text-white font-semibold rounded-xl px-6 py-3 text-sm hover:opacity-90 transition-all">Manage Account</button>
+            <button onclick="restart()" class="border-2 border-slate-200 text-slate-600 font-medium rounded-xl px-6 py-3 text-sm hover:bg-slate-50 transition-all">New Order</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /slide container -->
+  </div><!-- /right content -->
+</div><!-- /root layout -->
+
+<script>
+const S = {step:1,dest:null,dur:null,svc:null,plan:null,sim:null,dev:null,bdev:null,del:null,pay:'card',coupon:false};
+
+const PLANS = {
+  israel:[
+    {id:'i1',name:'Israel Starter',data:'5GB',talk:false,price:25,save:5,badge:'',feat:['5G Network','Mobile Hotspot','30-Day Validity']},
+    {id:'i2',name:'Israel Plus',data:'15GB',talk:true,price:45,save:10,badge:'Most Popular',feat:['5G Network','Unlimited Calls to IL','Int\'l SMS','30-Day Validity']},
+    {id:'i3',name:'Israel Premium',data:'Unlimited',talk:true,price:65,save:15,badge:'Best Value',feat:['Priority 5G','Unlimited Everything','30-Day Validity']},
+  ],
+  europe:[
+    {id:'e1',name:'Euro Data',data:'10GB',talk:false,price:35,save:0,badge:'',feat:['35+ Countries','4G/5G Coverage','90-Day Validity']},
+    {id:'e2',name:'Euro Connect',data:'20GB',talk:true,price:55,save:10,badge:'Most Popular',feat:['35+ Countries','Unlimited EU Calls','4G/5G','90-Day Validity']},
+    {id:'e3',name:'Euro Unlimited',data:'Unlimited',talk:true,price:75,save:15,badge:'Premium',feat:['35+ Countries','Unlimited Calls & SMS','Priority 5G','90-Day Validity']},
+  ],
+  usa:[
+    {id:'u1',name:'US Basic',data:'10GB',talk:false,price:30,save:0,badge:'',feat:['Nationwide 5G','Hotspot','30-Day Validity']},
+    {id:'u2',name:'US Plus',data:'25GB',talk:true,price:50,save:10,badge:'Most Popular',feat:['Nationwide 5G','Unlimited Calls & Texts','Hotspot','30-Day Validity']},
+    {id:'u3',name:'US Unlimited',data:'Unlimited',talk:true,price:70,save:20,badge:'Best Value',feat:['Nationwide 5G','Unlimited Everything','Priority Data','30-Day Validity']},
+  ],
+  worldwide:[
+    {id:'w1',name:'Global Starter',data:'5GB',talk:false,price:40,save:0,badge:'',feat:['100+ Countries','4G','30-Day Validity']},
+    {id:'w2',name:'Global Plus',data:'15GB',talk:true,price:65,save:15,badge:'Most Popular',feat:['100+ Countries','Calls to 50 Countries','4G/5G','30-Day Validity']},
+    {id:'w3',name:'Global Elite',data:'30GB',talk:true,price:90,save:20,badge:'Premium',feat:['100+ Countries','Unlimited Global Calls','Priority 5G','30-Day Validity']},
+  ],
+};
+const DP={iphone:35,samsung:28,pixel:22};
+const DN={iphone:'iPhone 15',samsung:'Galaxy S24',pixel:'Pixel 8'};
+
+let prevStep = 1;
+
+function go(n, dir) {
+  if(n===2&&(!S.dest||!S.dur||!S.svc)) return;
+  const outDir = dir==='right'?'enter-left':'enter-right';
+  const inDir  = dir==='right'?'enter-right':'enter-left';
+  const cur = document.getElementById('step-'+prevStep) || document.getElementById('success');
+  if(cur) cur.classList.add('hidden');
+  const target = n==='success' ? document.getElementById('success') : document.getElementById('step-'+n);
+  target.classList.remove('hidden','enter-right','enter-left');
+  void target.offsetWidth;
+  target.classList.add(dir?inDir:'enter-right');
+  S.step = n;
+  if(typeof n === 'number') prevStep = n;
+  updateNav(n);
+  if(n===2) renderPlans();
+  if(n===5) calcSummary();
+  target.scrollTop=0;
+}
+
+function updateNav(n) {
+  // Mobile bar
+  if(typeof n==='number'){
+    const pct=[20,40,60,80,100][n-1];
+    const mob=document.getElementById('mob-bar');
+    if(mob) mob.style.width=pct+'%';
+    const ml=document.getElementById('mob-step-label');
+    if(ml) ml.textContent='Step '+n+' of 5';
+  }
+
+  const labels={
+    israel:'🇮🇱 Israel',europe:'🇪🇺 Europe',usa:'🇺🇸 USA',worldwide:'🌍 Worldwide'
+  };
+  const svcL={data:'Data Only',full:'Talk, Text & Data'};
+
+  for(let i=1;i<=5;i++){
+    const navEl=document.getElementById('nav'+i);
+    const dot=document.getElementById('nd'+i);
+    if(!navEl) continue;
+    if(i<n){
+      navEl.className='step-nav-item flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer opacity-80';
+      dot.className='w-7 h-7 rounded-full bg-teal text-white flex items-center justify-center text-xs font-semibold flex-shrink-0';
+      dot.innerHTML='✓';
+    } else if(i===n){
+      navEl.className='step-nav-item flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/10 cursor-pointer';
+      dot.className='w-7 h-7 rounded-full bg-teal text-white flex items-center justify-center text-xs font-semibold flex-shrink-0';
+      dot.innerHTML=i;
+    } else {
+      navEl.className='step-nav-item flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer opacity-40';
+      dot.className='w-7 h-7 rounded-full bg-white/10 text-white/40 flex items-center justify-center text-xs font-semibold flex-shrink-0';
+      dot.innerHTML=i;
+    }
+  }
+  // Update sidebar subtitles
+  if(S.dest) document.getElementById('ns1').textContent=[S.dest&&labels[S.dest],S.dur,S.svc&&svcL[S.svc]].filter(Boolean).join(' · ');
+  if(S.plan) document.getElementById('ns2').textContent=S.plan.name+' · $'+S.plan.price+'/mo';
+  // Show sidebar summary
+  if(S.plan) updateSideSummary();
+}
+
+function pick(key,val,el){
+  S[key]=val;
+  const parent=el.closest('.grid,.flex');
+  parent.querySelectorAll('.card,.chip').forEach(e=>e.classList.remove('on'));
+  el.classList.add('on');
+  if(S.dest&&S.dur&&S.svc) document.getElementById('btn1').disabled=false;
+}
+
+function simPick(v){
+  S.sim=v;
+  document.getElementById('sa').classList.toggle('on',v==='existing');
+  document.getElementById('sb').classList.toggle('on',v==='new');
+  document.getElementById('sim-ef').classList.toggle('hidden',v!=='existing');
+  document.getElementById('sim-nf').classList.toggle('hidden',v!=='new');
+}
+
+function devPick(v){
+  S.dev=v;
+  document.getElementById('da').classList.toggle('on',v==='have');
+  document.getElementById('db').classList.toggle('on',v==='buy');
+  document.getElementById('dev-check').classList.toggle('hidden',v!=='have');
+  document.getElementById('dev-cards').classList.toggle('hidden',v!=='buy');
+}
+
+function buyDev(id,el){
+  S.bdev=id;
+  document.querySelectorAll('#dev-cards .card').forEach(e=>e.classList.remove('on'));
+  el.classList.add('on');
+}
+
+function delPick(v){
+  S.del=v;
+  document.getElementById('dela').classList.toggle('on',v==='pickup');
+  document.getElementById('delb').classList.toggle('on',v==='home');
+  document.getElementById('pickup-f').classList.toggle('hidden',v!=='pickup');
+  document.getElementById('home-f').classList.toggle('hidden',v!=='home');
+  calcSummary();
+}
+
+function payPick(v,el){
+  S.pay=v;
+  document.querySelectorAll('.pm').forEach(e=>{e.classList.remove('on');e.style.borderColor='';e.style.background='';});
+  el.classList.add('on');
+  document.getElementById('card-f').classList.toggle('hidden',v!=='card');
+  document.getElementById('alt-f').classList.toggle('hidden',v==='card');
+}
+
+function renderPlans(){
+  const dest=S.dest||'israel';
+  document.getElementById('il-notice').classList.toggle('hidden',dest!=='israel');
+  const list=(PLANS[dest]||[]).filter(p=>S.svc==='data'?!p.talk:true);
+  document.getElementById('plan-grid').innerHTML=list.map(p=>`
+    <div class="relative bg-white ps rounded-[2rem] p-5 cursor-pointer hover:-translate-y-1 transition-all duration-200 border-2 ${p.badge==='Most Popular'?'border-teal':'border-transparent'}" onclick="pickPlan('${p.id}',this)">
+      ${p.badge?`<div class="absolute -top-3 left-6 bg-teal text-white text-[11px] font-semibold px-3 py-1 rounded-full">${p.badge}</div>`:''}
+      <div class="flex items-start justify-between mt-1 mb-4">
+        <div>
+          <h3 class="font-bold text-navy text-lg font-display">${p.name}</h3>
+          <div class="flex items-baseline gap-1 mt-1"><span class="text-2xl font-bold text-teal">$${p.price}</span><span class="text-sm text-slate-400">/mo</span></div>
+          ${p.save?`<div class="text-xs text-turquoise font-semibold mt-0.5">Save $${p.save}/mo</div>`:''}
+        </div>
+        <div class="text-right">
+          <div class="bg-navy/5 rounded-xl px-3 py-1.5 text-center">
+            <div class="font-bold text-navy text-base">${p.data}</div>
+            <div class="text-[10px] text-slate-400 uppercase tracking-wide">Data</div>
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-2 mb-4">
+        ${p.talk?'<span class="bg-teal/10 text-teal text-xs font-medium px-2.5 py-1 rounded-full">✓ Talk &amp; Text</span>':''}
+        ${p.feat.map(f=>`<span class="bg-slate-100 text-slate-600 text-xs px-2.5 py-1 rounded-full">${f}</span>`).join('')}
+      </div>
+      <button class="w-full bg-navy text-white text-sm font-semibold py-3 rounded-xl hover:bg-teal transition-all duration-200">Select Plan →</button>
+    </div>`).join('');
+}
+
+function pickPlan(id,el){
+  const dest=S.dest||'israel';
+  S.plan=PLANS[dest].find(p=>p.id===id);
+  document.querySelectorAll('#plan-grid > div').forEach(e=>{e.style.borderColor='';e.classList.remove('ring-2');});
+  el.style.borderColor='#0D9488';
+  setTimeout(()=>go(3,'right'),280);
+}
+
+function calcSummary(){
+  if(!S.plan) return;
+  const p=S.plan;
+  const sim=S.sim==='new'?4.99:0;
+  const dev=S.bdev?DP[S.bdev]:0;
+  const del=S.del==='home'?4.99:0;
+  const disc=S.coupon?10:0;
+  const tax=+((p.price+sim+del)*0.08).toFixed(2);
+  const total=+(p.price+sim+del+tax+dev-disc).toFixed(2);
+
+  // Step 5 review card
+  document.getElementById('rev-plan').textContent=p.name;
+  document.getElementById('rev-data').textContent=p.data+' Data'+(p.talk?' · Talk & Text':'');
+  document.getElementById('rev-pkg').textContent='$'+p.price+'/mo';
+  document.getElementById('rev-sim').textContent=sim?'$'+sim:'Free';
+  document.getElementById('rev-del').textContent=del?'$'+del:'Free';
+  document.getElementById('rev-tax').textContent='$'+tax;
+  document.getElementById('rev-total').textContent='$'+total;
+  document.getElementById('rev-mo').textContent='$'+(p.price+(dev||0)).toFixed(2)+'/mo';
+  const dr=document.getElementById('rev-dev-r');
+  if(dev){dr.classList.remove('hidden');document.getElementById('rev-dev').textContent='$'+dev+'/mo';}
+  else dr.classList.add('hidden');
+  document.getElementById('rev-disc-r').classList.toggle('hidden',!S.coupon);
+
+  updateSideSummary();
+}
+
+function updateSideSummary(){
+  if(!S.plan) return;
+  const p=S.plan;
+  const sim=S.sim==='new'?4.99:0;
+  const dev=S.bdev?DP[S.bdev]:0;
+  const del=S.del==='home'?4.99:0;
+  const disc=S.coupon?10:0;
+  const tax=+((p.price+sim+del)*0.08).toFixed(2);
+  const total=+(p.price+sim+del+tax+dev-disc).toFixed(2);
+  document.getElementById('side-summary').classList.remove('hidden');
+  document.getElementById('ss-plan').textContent=p.name;
+  document.getElementById('ss-data').textContent=p.data+(p.talk?' · Talk & Text':'');
+  document.getElementById('ss-pkg').textContent='$'+p.price+'/mo';
+  document.getElementById('ss-sim').textContent=sim?'$'+sim:'Free';
+  document.getElementById('ss-del').textContent=del?'$'+del:'Free';
+  document.getElementById('ss-total').textContent='$'+total;
+  const dr=document.getElementById('ss-dev-r');
+  if(dev){dr.classList.remove('hidden');document.getElementById('ss-dev').textContent='$'+dev+'/mo';}
+  else dr.classList.add('hidden');
+}
+
+function applyCoupon(){
+  const v=document.getElementById('coupon').value.trim().toUpperCase();
+  if(['KOSHER10','SAVE10','SKW10'].includes(v)){
+    S.coupon=true;
+    document.getElementById('coupon-ok').classList.remove('hidden');
+    calcSummary();
+  }
+}
+
+function complete(){
+  const n='SKW-'+Math.random().toString(36).substr(2,6).toUpperCase();
+  document.getElementById('ord').textContent=n;
+  document.getElementById('suc-plan').textContent=S.plan?.name||'—';
+  document.getElementById('suc-detail').textContent=S.plan?S.plan.data+' · $'+S.plan.price+'/mo':'—';
+  document.getElementById('suc-sim').textContent=S.sim==='new'?'New SIM — shipping with order':'Using existing SIM';
+  document.getElementById('suc-del').textContent=S.del==='pickup'?'Store Pickup — ready in 2 hours':'Home Delivery — 3–5 business days';
+  document.getElementById('suc-total').textContent=document.getElementById('rev-total').textContent;
+  go('success','right');
+  prevStep='success';
+  document.getElementById('step-nav').classList.add('hidden');
+  document.getElementById('side-summary').classList.add('hidden');
+}
+
+function restart(){
+  Object.assign(S,{step:1,dest:null,dur:null,svc:null,plan:null,sim:null,dev:null,bdev:null,del:null,pay:'card',coupon:false});
+  document.querySelectorAll('.card,.chip').forEach(e=>e.classList.remove('on'));
+  document.getElementById('step-nav').classList.remove('hidden');
+  document.getElementById('side-summary').classList.add('hidden');
+  document.getElementById('btn1').disabled=true;
+  document.getElementById('coupon').value='';
+  document.getElementById('coupon-ok').classList.add('hidden');
+  prevStep=1;
+  go(1,'left');
+}
+</script>
+</body>
+</html>
