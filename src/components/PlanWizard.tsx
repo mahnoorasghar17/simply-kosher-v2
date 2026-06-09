@@ -66,6 +66,8 @@ interface Answers {
     cardNumber: string;
     cardExpiry: string;
     cardCvc: string;
+    couponCode: string;
+    couponApplied: boolean;
     termsAccepted: boolean;
   };
 }
@@ -74,6 +76,15 @@ export interface PlanWizardProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
+// ── Pricing Constants ─────────────────────────────────────────────────────────
+
+const SIM_FEE = 0;
+const ACTIVATION_FEE = 10.00;
+const SHIPPING_FEE = 4.99;
+const TAX_RATE = 0.08;
+const REGULATORY_FEE = 1.99;
+const COUPON_DISCOUNTS: Record<string, number> = { 'KOSHER10': 10, 'WELCOME5': 5 };
 
 // ── Plan Catalog ──────────────────────────────────────────────────────────────
 
@@ -258,7 +269,7 @@ const INITIAL_ANSWERS: Answers = {
   portingInfo: { phoneNumber: '', carrier: '', accountName: '', accountAddress: '', accountNumber: '', portingPin: '', pinHasExpiry: null, pinExpiry: '', simNumber: '' },
   portingChecklist: [],
   areaCode: '',
-  customerInfo: { firstName: '', lastName: '', email: '', shippingAddress: '', shippingCity: '', shippingState: '', shippingZip: '', billingAddress: '', city: '', state: '', zip: '', cardNumber: '', cardExpiry: '', cardCvc: '', termsAccepted: false },
+  customerInfo: { firstName: '', lastName: '', email: '', shippingAddress: '', shippingCity: '', shippingState: '', shippingZip: '', billingAddress: '', city: '', state: '', zip: '', cardNumber: '', cardExpiry: '', cardCvc: '', couponCode: '', couponApplied: false, termsAccepted: false },
 };
 
 // ── Shared UI Atoms ────────────────────────────────────────────────────────────
@@ -954,6 +965,13 @@ export default function PlanWizard({ isOpen, onClose }: PlanWizardProps) {
     const plan = answers.selectedPlan || computeRecommendedPlan(answers);
     const net = plan ? NETWORK_META[plan.network] : null;
 
+    const planPrice = plan?.price ?? 0;
+    const itemsTotal = planPrice + SIM_FEE + ACTIVATION_FEE;
+    const salesTax = Math.round(itemsTotal * TAX_RATE * 100) / 100;
+    const couponDiscount = ci.couponApplied ? (COUPON_DISCOUNTS[ci.couponCode.toUpperCase()] ?? 0) : 0;
+    const subtotal = itemsTotal + SHIPPING_FEE + salesTax + REGULATORY_FEE - couponDiscount;
+    const monthlyCharges = planPrice + REGULATORY_FEE;
+
     if (orderSubmitted) {
       return (
         <motion.div
@@ -1037,7 +1055,7 @@ export default function PlanWizard({ isOpen, onClose }: PlanWizardProps) {
               )}
             </div>
             {/* SIM card */}
-            <div className="px-4 py-3 flex items-start gap-2">
+            <div className="px-4 py-3 border-b border-slate-100 flex items-start gap-2">
               <CreditCard className="w-3.5 h-3.5 text-violet-500 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-xs text-slate-600">SIM Card: <span className="font-semibold text-slate-800">KOSHER VTMO SIM CARD</span></p>
@@ -1045,6 +1063,106 @@ export default function PlanWizard({ isOpen, onClose }: PlanWizardProps) {
                   <p className="text-xs text-slate-500 mt-0.5">SIM #: {answers.portingInfo.simNumber}</p>
                 )}
               </div>
+            </div>
+
+            {/* Pricing Breakdown */}
+            <div className="px-4 py-4 space-y-4">
+
+              {/* Group 1: Package + SIM + Activation = Total */}
+              <div className="space-y-1.5">
+                <div className="flex justify-between text-xs">
+                  <span className="text-slate-500">Package ({plan.name})</span>
+                  <span className="text-slate-700">${planPrice.toFixed(2)}</span>
+                </div>
+                {SIM_FEE > 0 && (
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-500">SIM Card</span>
+                    <span className="text-slate-700">${SIM_FEE.toFixed(2)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-xs">
+                  <span className="text-slate-500">Activation Fee</span>
+                  <span className="text-slate-700">${ACTIVATION_FEE.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-xs font-bold pt-1.5 border-t border-slate-200">
+                  <span className="text-slate-800">Total</span>
+                  <span className="text-slate-900">${itemsTotal.toFixed(2)}</span>
+                </div>
+              </div>
+
+              {/* Group 2: Fees + Coupon = Subtotal */}
+              <div className="space-y-1.5">
+                <div className="flex justify-between text-xs">
+                  <span className="text-slate-500">Shipping Fee</span>
+                  <span className="text-slate-700">${SHIPPING_FEE.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-slate-500">Sales Tax ({(TAX_RATE * 100).toFixed(0)}%)</span>
+                  <span className="text-slate-700">${salesTax.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-slate-500">Regulatory Fee</span>
+                  <span className="text-slate-700">${REGULATORY_FEE.toFixed(2)}</span>
+                </div>
+                {couponDiscount > 0 && (
+                  <div className="flex justify-between text-xs text-emerald-600 font-medium">
+                    <span>Coupon ({ci.couponCode.toUpperCase()})</span>
+                    <span>-${couponDiscount.toFixed(2)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-xs font-bold pt-1.5 border-t border-slate-200">
+                  <span className="text-slate-800">Subtotal</span>
+                  <span className="text-slate-900">${subtotal.toFixed(2)}</span>
+                </div>
+              </div>
+
+              {/* Coupon input */}
+              <div className="space-y-1">
+                <div className="flex gap-2">
+                  <input
+                    className="flex-1 text-xs border border-slate-200 rounded-lg px-3 py-2 outline-none focus:border-brand-teal bg-white placeholder:text-slate-400"
+                    placeholder="Coupon code"
+                    value={ci.couponCode}
+                    onChange={e => updateCI({ couponCode: e.target.value, couponApplied: false })}
+                  />
+                  <button
+                    onClick={() => {
+                      const key = ci.couponCode.toUpperCase();
+                      if (COUPON_DISCOUNTS[key] !== undefined) {
+                        updateCI({ couponApplied: true });
+                      } else {
+                        updateCI({ couponApplied: false });
+                      }
+                    }}
+                    className="text-xs font-semibold px-3 py-2 rounded-lg bg-brand-teal text-white hover:bg-teal-700 transition-colors whitespace-nowrap"
+                  >
+                    Apply
+                  </button>
+                </div>
+                {ci.couponApplied && couponDiscount > 0 && (
+                  <p className="text-[11px] text-emerald-600 font-medium flex items-center gap-1">
+                    <Check className="w-3 h-3" /> Coupon applied — ${couponDiscount.toFixed(2)} off!
+                  </p>
+                )}
+                {ci.couponCode && !ci.couponApplied && (
+                  <p className="text-[11px] text-slate-400">Enter a valid code and click Apply.</p>
+                )}
+                {ci.couponCode && ci.couponApplied && couponDiscount === 0 && (
+                  <p className="text-[11px] text-red-400">Invalid coupon code.</p>
+                )}
+              </div>
+
+              {/* Total Due Today */}
+              <div className="rounded-xl bg-primary-navy text-white px-4 py-3 flex items-center justify-between">
+                <span className="text-sm font-bold tracking-tight">Total Due Today</span>
+                <span className="text-2xl font-bold">${subtotal.toFixed(2)}</span>
+              </div>
+
+              {/* Monthly charges */}
+              <p className="text-[11px] text-slate-400 text-center leading-relaxed">
+                After today, your monthly charges will be <span className="font-semibold text-slate-600">${monthlyCharges.toFixed(2)}/mo</span>
+              </p>
+
             </div>
           </div>
         )}
