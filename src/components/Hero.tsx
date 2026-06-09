@@ -1,7 +1,11 @@
 import { motion } from 'motion/react';
 import { ChevronRight } from 'lucide-react';
 
-export default function Hero() {
+interface HeroProps {
+  onOpenWizard: () => void;
+}
+
+export default function Hero({ onOpenWizard }: HeroProps) {
   return (
     <section id="hero" className="relative pt-32 pb-20 overflow-hidden mesh-bg">
       <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center relative z-10">
@@ -23,8 +27,11 @@ export default function Hero() {
             Experience premium connectivity with zero noise. Guided plans, reliable networks, and a community that values what you do.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 items-center">
-            <button className="w-full sm:w-auto bg-primary-navy text-white px-8 py-4 rounded-full text-lg font-medium hover:bg-slate-800 transition-all transform hover:-translate-y-1 shadow-lg flex items-center justify-center gap-2">
-              Find Your Plan
+            <button
+              onClick={onOpenWizard}
+              className="w-full sm:w-auto bg-primary-navy text-white px-8 py-4 rounded-full text-lg font-medium hover:bg-slate-800 transition-all transform hover:-translate-y-1 shadow-lg flex items-center justify-center gap-2"
+            >
+              Choose a Plan
               <ChevronRight size={20} />
             </button>
             <button className="w-full sm:w-auto px-8 py-4 rounded-full text-lg font-medium text-slate-600 hover:text-primary-navy transition-all flex items-center justify-center gap-2 underline-offset-4 hover:underline">
