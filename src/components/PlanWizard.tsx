@@ -240,7 +240,7 @@ function canContinue(screen: number, answers: Answers): boolean {
     case 11: {
       const pi = answers.portingInfo;
       const allChecked = PORTING_CHECKLIST.every(item => answers.portingChecklist.includes(item.id));
-      const fieldsOk = !!(pi.phoneNumber && pi.carrier && pi.accountName && pi.accountAddress && pi.accountNumber && pi.portingPin && pi.pinHasExpiry !== null && pi.simNumber);
+      const fieldsOk = !!(pi.phoneNumber && pi.carrier && pi.accountName && pi.accountAddress && pi.accountNumber && pi.portingPin && pi.pinHasExpiry !== null);
       const pinExpiryOk = !pi.pinHasExpiry || !!pi.pinExpiry;
       return fieldsOk && pinExpiryOk && allChecked;
     }
@@ -903,32 +903,6 @@ export default function PlanWizard({ isOpen, onClose }: PlanWizardProps) {
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
-
-        {/* SIM Card Selection */}
-        <div className="mb-6">
-          <p className="text-xs font-semibold text-slate-600 mb-3">SIM Card</p>
-          <div className="flex items-center gap-3 p-4 rounded-2xl border-2 border-brand-teal bg-brand-teal/5">
-            <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center flex-shrink-0">
-              <CreditCard className="w-5 h-5 text-violet-600" />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-bold text-primary-navy">KOSHER VTMO SIM CARD</p>
-            </div>
-            <div className="w-5 h-5 rounded-full border-2 border-brand-teal bg-brand-teal flex items-center justify-center flex-shrink-0">
-              <Check className="w-3 h-3 text-white" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <FormField label="SIM Number" required>
-              <input
-                className={inputCls}
-                placeholder="Enter SIM number"
-                value={pi.simNumber}
-                onChange={e => updatePI({ simNumber: e.target.value })}
-              />
-            </FormField>
-          </div>
         </div>
 
         {/* Verification Checklist */}
